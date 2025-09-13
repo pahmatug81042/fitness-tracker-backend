@@ -1,7 +1,23 @@
 const Workout = require("../models/Workout");
 
-// Get all workouts for logged-in user
-const getWorkouts = async (req, res) => {
+// Create a new workout
+exports.createWorkout = async (req, res) => {
+    const { title, description } = req.body;
+    try {
+        const workout = await Workout.create({
+            title,
+            description,
+            user: req.user._id,
+            exercises: [],
+        });
+        res.status(201).json(workout);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Get all workouts for user
+exports.getWorkouts = async (req, res) => {
     try {
         const workouts = await Workout.find({ user: req.user._id });
         res.json(workouts);
@@ -10,53 +26,25 @@ const getWorkouts = async (req, res) => {
     }
 };
 
-// Create new workout
-const createWorkout = async (req, res) => {
-    const { title, description, exercises } = req.body;
-    try {
-        const workout = await Workout.create({
-            user: req.user._id,
-            title,
-            description,
-            exercises,
-        });
-        res.status(201).json(workout);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+// Add exercises to a workout
+exports.addExercise = async (req, res) => {
+    const { exercise } = req.body;
+    const workoutId = req.params.id;
 
-// Update workout
-const updateWorkout = async (req, res) => {
     try {
-        const workout = await Workout.findById(req.params.id);
+        const workout = await Workout.findById(workoutId);
+
         if (!workout) {
             return res.status(404).json({ message: "Workout not found" });
         }
         if (workout.user.toString() !== req.user._id.toString()) {
-            return res.status(401).json({ message: "Not authorized" });
+            return res.status(403).json({ message: "Not authorized to modify this workout" });
         }
 
-        Object.assign(workout, req.body);
-        const updatedWorkout = await Workout.save();
-        res.json(updatedWorkout);
+        workout.exercises.push(exercise);
+        await workout.save();
+        res.json(workout);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Delete workout
-const deleteWorkout = async (req, res) => {
-    try {
-        const workout = await Workout.findById(req.params.id);
-        if (!workout) {
-            return res.status(401).json({ message: "Not authorized" });
-        }
-        await workout.deleteOne();
-        res.jsonO({ message: "Workout removed" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-module.exports = { getWorkouts, createWorkout, updateWorkout, deleteWorkout };
