@@ -4,19 +4,20 @@ require("dotenv").config();
 
 const protect = async (req, res, next) => {
     let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    if (
+        req.headers.authorization && 
+        req.headers.authorization.startsWith("Bearer")
+    ) {
+        token = req.headers.authorization.split(" ")[1];
         try {
-            token = req.headers.authorization.split(" ")[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
             req.user = await User.findById(decoded.id).select("-password");
-            next();
+            next();            
         } catch (error) {
             res.status(401).json({ message: "Not authorized, token failed" });
         }
-    }
-    
-    if (!token) {
-        res.status(401).json({ message: "Not authorized, no token" });
+    } else {
+        res.status(401).json({ message: "No token, authorization denied" });
     }
 };
 
