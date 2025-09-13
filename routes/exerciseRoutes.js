@@ -1,9 +1,8 @@
 const express = require("express");
-const { searchExercises, getExerciseVideos } = require("../controllers/exerciseController");
-
 const router = express.Router();
+const { searchExercises, searchVideos } = require("../controllers/exerciseController");
 
 router.get("/search", searchExercises);
-router.get("/videos", getExerciseVideos);
+router.get("/videos", searchVideos);
 
 module.exports = router;
