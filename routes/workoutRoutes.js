@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middleware/authMiddleware");
-const {
-    createWorkout,
-    getWorkouts,
-    addExercise,
-} = require("../controllers/workoutController");
+const workoutController = require("../controllers/workoutController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.route("/").post(protect, createWorkout).get(protect, getWorkouts);
-router.route("/:id/addExercises").post(protect, addExercise);
+// Create a workout
+router.post("/", authMiddleware, workoutController.createWorkout);
 
-module.exports = router;
+// Get all workouts for user
+router.get("/", authMiddleware, workoutController.getWorkouts);
+
+// Get a single workout by ID
+router.get("/:id", authMiddleware, workoutController.getWorkoutById);
+
+// Add exercise to workout
+router.post("/:id/addExercise", authMiddleware, workoutController.addExercise);

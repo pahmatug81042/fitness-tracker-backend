@@ -2,49 +2,65 @@ const Workout = require("../models/Workout");
 
 // Create a new workout
 exports.createWorkout = async (req, res) => {
-    const { title, description } = req.body;
     try {
-        const workout = await Workout.create({
+        const { title, description } = req.body;
+        const workout = new Workout({
             title,
             description,
-            user: req.user._id,
-            exercises: [],
+            user: req.user._id, // set user from auth middleware
         });
-        res.status(201).json(workout);
+        await workout.save();
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Failed to create workout" });
     }
 };
 
-// Get all workouts for user
+// Get all workouts for the logged-in user
 exports.getWorkouts = async (req, res) => {
     try {
         const workouts = await Workout.find({ user: req.user._id });
         res.json(workouts);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch workouts" });
     }
 };
 
-// Add exercises to a workout
-exports.addExercise = async (req, res) => {
-    const { exercise } = req.body;
-    const workoutId = req.params.id;
-
+// Get single workout by ID (must belong to user)
+exports.getWorkoutById = async (req, res) => {
     try {
-        const workout = await Workout.findById(workoutId);
-
+        const workout = await Workout.findOne({
+            _id: req.params.id,
+            user: req.user._id,
+        });
         if (!workout) {
-            return res.status(404).json({ message: "Workout not found" });
+            return res.status(404).json({ error: "Workout not found" });
         }
-        if (workout.user.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "Not authorized to modify this workout" });
+        res.json(workout);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch workout" });
+    }
+};
+
+// Add exercise to a workout
+exports.addExercise = async (req, res) => {
+    try {
+        const workout = await Workout.findOne({
+            _id: req.params.id,
+            user: req.user._id,
+        });
+        if (!workout) {
+            res.status(404).json({ erorr: "Workout not found" });
         }
 
-        workout.exercises.push(exercise);
+        const { name, bodyPart, equipment, sets, reps, duration } = req.body.exercise || req.body;
+        workout.exercises.push({ name, bodyPart, equipment, sets, reps, duration });
         await workout.save();
         res.json(workout);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Failed to add exercise" });
     }
 };
