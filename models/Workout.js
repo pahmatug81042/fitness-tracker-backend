@@ -12,9 +12,15 @@ const workoutSchema = new mongoose.Schema(
                 name: String,
                 bodyPart: String,
                 equipment: String,
-                target: String,
+                sets: Number,
+                reps: Number,
+                duration: Number,
             },
         ],
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
         user: {
             type: mongoose.Schema.Types.ObjectId, 
             ref: "User",
