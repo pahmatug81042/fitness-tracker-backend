@@ -254,7 +254,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!token) return;
 
   try {
-    const res = await fetch(`${API_BASE}/users/me`, {
+    const res = await fetch(`${API_BASE}/auth/me`, { // fixed endpoint
       headers: { Authorization: `Bearer ${token}` }
     });
     if (res.ok) {
