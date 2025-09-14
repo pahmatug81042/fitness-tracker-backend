@@ -1,66 +1,35 @@
-const Workout = require("../models/Workout");
+const Workout = require('../models/Workout');
 
-// Create a new workout
-exports.createWorkout = async (req, res) => {
-    try {
-        const { title, description } = req.body;
-        const workout = new Workout({
-            title,
-            description,
-            user: req.user._id, // set user from auth middleware
-        });
-        await workout.save();
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to create workout" });
-    }
-};
-
-// Get all workouts for the logged-in user
-exports.getWorkouts = async (req, res) => {
-    try {
-        const workouts = await Workout.find({ user: req.user._id });
-        res.json(workouts);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch workouts" });
-    }
-};
-
-// Get single workout by ID (must belong to user)
-exports.getWorkoutById = async (req, res) => {
-    try {
-        const workout = await Workout.findOne({
-            _id: req.params.id,
-            user: req.user._id,
-        });
-        if (!workout) {
-            return res.status(404).json({ error: "Workout not found" });
-        }
-        res.json(workout);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch workout" });
-    }
-};
-
-// Add exercise to a workout
+// Add exercise to workout
 exports.addExercise = async (req, res) => {
-    try {
-        const workout = await Workout.findOne({
-            _id: req.params.id,
-            user: req.user._id,
-        });
-        if (!workout) {
-            res.status(404).json({ erorr: "Workout not found" });
-        }
+    const workoutId = req.params.id;
+    const { exercise } = req.body;
 
-        const { name, bodyPart, equipment, sets, reps, duration } = req.body.exercise || req.body;
-        workout.exercises.push({ name, bodyPart, equipment, sets, reps, duration });
+    if (!exercise || !exercise.name) {
+        return res.status(400).json({ message: 'Exercise data is required' });
+    }
+
+    try {
+        const workout = await Workout.findById(workoutId);
+
+        if (!workout) return res.status(404).json({ message: 'Workout not found' });
+
+        // Add sets/reps/duration
+        const newExercise = {
+            name: exercise.name,
+            bodyPart: exercise.bodyPart || '',
+            equipment: exercise.equipment || '',
+            sets: exercise.sets || 0,
+            reps: exercise.reps || 0,
+            duration: exercise.duration || 0
+        };
+
+        workout.exercises.push(newExercise);
         await workout.save();
-        res.json(workout);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to add exercise" });
+
+        res.status(201).json({ message: 'Exercise added', exercises: workout.exercises });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
     }
 };
