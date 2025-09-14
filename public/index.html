@@ -1,67 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Workout Tracker</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Register Page -->
-    <section id="registerPage" class="page active">
-        <h2>Register</h2>
-        <input type="text" id="registerName" placeholder="Name" />
-        <input type="email" id="registerEmail" placeholder="Email" />
-        <input type="password" id="registerPassword" placeholder="Password" />
-        <button id="registerBtn">Register</button>
-        <p id="registerMsg"></p>
-        <p>Already have an account? <a href="#" id="toLogin">Login</a></p>
-    </section>
+  <div class="page" id="loginPage">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <p id="LoginMsg"></p>
+    <button id="toRegister">Go to Register</button>
+  </div>
 
-    <!-- Login Page -->
-     <section id="loginPage" class="page">
-        <h2>Login</h2>
-        <input type="email" id="loginEmail" placeholder="Email" />
-        <input type="password" id="loginPassword" placeholder="Password" />
-        <button id="loginBtn">Login</button>
-        <p id="LoginMsg"></p>
-        <p>Don't have an account? <a href="#" id="toRegister">Register</a></p>
-     </section>
+  <div class="page" id="registerPage">
+    <h2>Register</h2>
+    <input type="text" id="registerName" placeholder="Name" />
+    <input type="email" id="registerEmail" placeholder="Email" />
+    <input type="password" id="registerPassword" placeholder="Password" />
+    <button id="registerBtn">Register</button>
+    <p id="registerMsg"></p>
+    <button id="toLogin">Go to Login</button>
+  </div>
 
-     <!-- Home Page -->
-     <section id="homePage" class="page">
-        <h1>Fitness Tracker</h1>
-        <p id="welcomeMsg"></p>
-        <button id="logoutBtn">Logout</button>
+  <div class="page" id="homePage">
+    <h2 id="welcomeMsg"></h2>
+    <button id="logoutBtn">Logout</button>
 
-        <section id="workouts">
-            <h2>Workouts</h2>
-            <input type="text" id="workoutName" placeholder="Workout Title" />
-            <button id="addWorkoutBtn">Add Workout</button>
-            <ul id="workoutList"></ul>
-            <select id="workoutSelect"></select>
-        </section>
+    <div id="workoutForm">
+      <input type="text" id="workoutName" placeholder="Workout Name" />
+      <button id="addWorkoutBtn">Add Workout</button>
+    </div>
 
-        <section id="exercises">
-            <h2>Exercises</h2>
-            <input type="text" id="exerciseName" placeholder="Exercise name" />
-            <input type="text" id="bodyPart" placeholder="Body Part" />
-            <input type="text" id="equipment" placeholder="Equipment" />
-            <input type="number" id="sets" placeholder="Sets" />
-            <input type="number" id="reps" placeholder="Reps" />
-            <input type="number" id="duration" placeholder="Duration (min)" />
-            <button id="addExerciseBtn">Add Exercise to Workout</button>
-            <ul id="exerciseList"></ul>
-        </section>
+    <ul id="workoutList"></ul>
 
-        <section id="youtube">
-            <h2>Exercise Videos</h2>
-            <input type="text" id="searchQuery" placeholder="Exercise name" />
-            <button id="searchBtn">Search Videos</button>
-            <div id="videoContainer"></div>
-        </section>
-     </section>
+    <select id="workoutSelect"></select>
 
-     <script src="script.js"></script>
+    <div id="exerciseForm">
+      <input type="text" id="exerciseName" placeholder="Exercise Name" />
+      <input type="text" id="bodyPart" placeholder="Body Part" />
+      <input type="text" id="equipment" placeholder="Equipment" />
+      <input type="number" id="sets" placeholder="Sets" />
+      <input type="number" id="reps" placeholder="Reps" />
+      <input type="number" id="duration" placeholder="Duration (min)" />
+      <button id="addExerciseBtn">Add Exercise</button>
+    </div>
+
+    <ul id="exerciseList"></ul>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
