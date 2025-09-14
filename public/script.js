@@ -1,108 +1,116 @@
-const e = require("cors");
+// ==============================
+// Utility: API Base
+// ==============================
+const API_BASE = "http://localhost:5000/api";
 
-const API_URL = "http://localhost:5000/api";
+// ==============================
+// Utility: Page Navigation
+// ==============================
+const pages = document.querySelectorAll(".page");
+function showPage(pageId) {
+    pages.forEach((p) => p.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
+};
+
+// ==============================
+// Auth: Register & Login
+// ==============================
+const registerBtn = document.getElementById("registerBtn");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const toLogin = document.getElementById("toLogin");
+const toRegister = document.getElementById("toRegister");
+
 let token = localStorage.getItem("token");
+let currentUser = null;
 
-// Pages
-const registerPage = document.getElementById("registerPage");
-const loginPage = document.getElementById("loginPage");
-const homePage = document.getElementById("homePage");
-const welcomePage = document.getElementById("welcomeMsg");
-
-function showPage (page) {
-    [registerPage, loginPage, homePage].forEach(p => p.classList.remove("active"));
-    page.classList.add("active");
-}
-
-// Navigation
-document.getElementById("toLogin").addEventListener("click", () => showPage(loginPage));
-document.getElementById("toRegister").addEventListener("click", () => showPage(registerPage));
-
-// ------------------
 // Register
-// ------------------
-document.getElementById("registerPage").addEventListener("click", async () => {
+registerBtn?.addEventListener("click", async () => {
     const name = document.getElementById("registerName").value;
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
 
     try {
-        const res = await fetch(`${API_URL}/auth/register`, {
+        const res = await fetch(`${API_BASE}/users/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password })
+            body: JSON.stringify({ name, email, password }),
         });
         const data = await res.json();
-        document.getElementById("registerMsg").innerText = data.message || data.error;
-        if (res.ok) showPage(loginPage);
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-// ------------------
-// Login
-// ------------------
-document.getElementById("loginBtn").addEventListener("click", async () => {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    try {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
+        document.getElementById("registerMsg").innerText = data.message || "Registered successfully!";
         if (res.ok) {
-            token = data.token;
-            localStorage.setItem("token", token);
-            welcomeMsg.innerText = `Welcome, ${data.user.name}!`;
-            showPage(homePage);
-            loadWorkouts();
-        } else {
-            document.getElementById("loginMsg").innerText = data.error;
+            showPage("loginPage");
         }
     } catch (error) {
         console.error(error);
     }
 });
 
-// ------------------
-// Logout
-// ------------------
-document.getElementById("logoutBtn").addEventListener("click", () => {
-    token = null;
-    localStorage.removeItem("token");
-    showPage(loginPage);
+// Login
+loginBtn?.addEventListener("click", async () => {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    try {
+        const res = await fetch(`${API_BASE}/users/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password });
+        });
+        const data = await res.json();
+        if (res.ok && data.token) {
+            token = data.token;
+            localStorage.setItem("token", token);
+            currentUser = data.user;
+            document.getElementById("welcomeMsg").innerText = `Welcome, ${currentUser.name}`;
+            await loadWorkouts();
+            showPage("homePage");
+        } else {
+            document.getElementById("LoginMsg").innerText = data.message || "Login failed";
+        }
+    } catch (error) {
+        console.error(error);
+    }
 });
 
-// ------------------
+// Logout
+logoutBtn?.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    token = null;
+    currentUser = null;
+    showPage("loginPage");
+});
+
+// Page links
+toLogin?.addEventListener("click", () => showPage("loginPage"));
+toRegister?.addEventListener("click", () => showPage("registerPage"));
+
+// ==============================
 // Workouts
-// ------------------
+// ==============================
+const addWorkoutBtn = document.getElementById("addWorkoutBtn");
+const workoutList = document.getElementById("workoutList");
+const workoutSelect = document.getElementById("workoutSelect");
+
 async function loadWorkouts () {
     try {
-        const res = await fetch(`${API_URL}/workouts`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const res = await fetch(`${API_BASE}/workouts`, {
+            headers: { Authorization: `Bearer ${token}` },
         });
         const workouts = await res.json();
-
-        const workoutList = document.getElementById("workoutList");
-        const workoutSelect = document.getElementById("workoutSelect");
 
         workoutList.innerHTML = "";
         workoutSelect.innerHTML = "";
 
-        workouts.forEach(w => {
+        workouts.forEach((w) => {
             const li = document.createElement("li");
-            li.innerText = w.title;
+            li.textContent = w.title;
             workoutList.appendChild(li);
 
             const option = document.createElement("option");
             option.value = w._id;
-            option.innerText = w.title;
+            option.textContent = w.title;
             workoutSelect.appendChild(option);
         });
     } catch (error) {
@@ -110,74 +118,42 @@ async function loadWorkouts () {
     }
 };
 
-document.getElementById("addWorkoutBtn").addEventListener("click", async () => {
+addWorkoutBtn?.addEventListener("click", async () => {
     const title = document.getElementById("workoutName").value;
     try {
-        const res = await fetch(`${API_URL}/workouts`, {
+        const res = await fetch(`${API_BASE}/workouts`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-                body: JSON.stringify({ title })
+                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({ title }),
         });
         if (res.ok) {
-            document.getElementById("workoutName").value = "";
-            loadWorkouts();
+            await loadWorkouts();
         }
     } catch (error) {
         console.error(error);
     }
 });
 
-// ------------------
+// ==============================
 // Exercises
-// ------------------
-document.getElementById("addExerciseBtn").addEventListener("click", async () => {
-    const workoutId = document.getElementById("workoutSelect").value;
-    const exercise = {
-        name: document.getElementById("exerciseName").value,
-        bodyPart: document.getElementById("bodyPart").value,
-        equipment: document.getElementById("equipment").value,
-        sets: Number(document.getElementById("sets").value),
-        reps: Number(document.getElementById("reps").value),
-        duration: Number(document.getElementById("duration").value)
-    };
-
-    try {
-        const res = await fetch(`${API_URL}/workouts/${workoutId}/addExercise`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify({ exercise }),
-        });
-        if (res.ok) {
-            document.getElementById("exerciseName").value = "";
-            document.getElementById("bodyPart").value = "";
-            document.getElementById("equipment").value = "";
-            document.getElementById("sets").value = "";
-            document.getElementById("reps").value = "";
-            document.getElementById("duration").value = "";
-            loadExercises(workoutId);
-        }
-    } catch (error) {
-        console.error(error);
-    }
-});
+// ==============================
+const addExerciseBtn = document.getElementById("addExerciseBtn");
+const exerciseList = document.getElementById("exerciseList");
 
 async function loadExercises (workoutId) {
     try {
-        const res = await fetch(`${API_URL}/workouts/${workoutId}`, {
-           headers: { Authorization: `Bearer ${token}` }, 
+        const res = await fetch(`${API_BASE}/workouts/${workoutId}`, {
+            headers: { Authorization: `Bearer ${token}` },
         });
         const workout = await res.json();
-        const exerciseList = document.getElementById("exerciseList");
+
         exerciseList.innerHTML = "";
-        workout.exercises.forEach(ex => {
+        workout.exercises.forEach((ex) => {
             const li = document.createElement("li");
-            li.innerText = `${ex.name} - ${ex.bodyPart} - ${ex.equipment} (${ex.sets || "-"} sets x ${ex.reps || "-"} reps, ${ex.duration || "-"} min)`;
+            li.textContent = `${ex.name} (${ex.sets}x${ex.reps}, ${ex.duration || 0} min)`;
             exerciseList.appendChild(li);
         });
     } catch (error) {
@@ -185,39 +161,84 @@ async function loadExercises (workoutId) {
     }
 };
 
-// ------------------
-// YouTube Search
-// ------------------
-document.getElementById("searchBtn").addEventListener("click", async () => {
-    const query = document.getElementById("searchQuery").value;
+addExerciseBtn?.addEventListener("click", async () => {
+    const workoutId = workoutSelect.value;
+    const name = document.getElementById("exerciseName").value;
+    const bodyPart = document.getElementById("bodyPart").value;
+    const equipment = document.getElementById("equipment").value;
+    const sets = parseInt(document.getElementById("sets").value) || 0;
+    const reps = parseInt(document.getElementById("reps").value) || 0;
+    const duration = parseInt(document.getElementById("duration").value) || 0;
+
     try {
-        const res = await fetch(`${API_URL}/youtube/search?q=${query}`, {
+        const res = await fetch(`${API_BASE}/workouts/${workoutId}/exercises`, {
+            method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({ name, bodyPart, equipment, sets, reps, duration }),
         });
-        const videos = await res.json();
-        const container = document.getElementById("videoContainer");
-        container.innerHTML = "";
-        videos.forEach(video => {
-            const iframe = document.getElementById("iframe");
-            iframe.src = `https://www.youtube.com/embed/${video.videoId}`;
-            iframe.width = "300";
-            iframe.height = "200";
-            iframe.allowFullscreen = true;
-            container.appendChild(iframe);
-        });
+        if (res.ok) {
+            await loadExercises(workoutId);
+        }
     } catch (error) {
         console.error(error);
     }
 });
 
-// ------------------
-// Init
-// ------------------
-if (token) {
-    showPage(homePage);
-    loadWorkouts();
-} else {
-    showPage(loginPage);
-}
+workoutSelect?.addEventListener("change", (e) => loadExercises(e.target.value));
+
+// ==============================
+// YouTube Search
+// ==============================
+const searchBtn = document.getElementById("searchBtn");
+const videoContainer = document.getElementById("videoContainer");
+
+searchBtn?.addEventListener("click", async () => {
+    const query = document.getElementById("searchQuery").value;
+    try {
+        const res = await fetch(`${API_BASE}/youtube/search?q=${query}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        videoContainer.innerHTML = "";
+        if (data.contents) {
+            data.contents.forEach((item) => {
+                if (item.video) {
+                    const iframe = document.createElement("iframe");
+                    iframe.src = `https://www.youtube.com/embed/${item.video.videoId}`;
+                    iframe.width = "300";
+                    iframe.height = "200";
+                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                    videoContainer.appendChild(iframe);
+                }
+            });
+        }
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+// ==============================
+// Auto-login if token exists
+// ==============================
+window.addEventListener("DOMContentLoaded", async () => {
+    if (token) {
+        try {
+            const res = await fetch(`${API_BASE}/users/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentUser = data;
+                document.getElementById("welcomeMsg").innerText = `Welcome, ${currentUser.name}`;
+                await loadWorkouts();
+                showPage("homePage");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+});
