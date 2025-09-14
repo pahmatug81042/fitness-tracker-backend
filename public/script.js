@@ -1,20 +1,12 @@
-// ==============================
-// Utility: API Base
-// ==============================
 const API_BASE = "https://expert-zebra-97xxg55r7v96297q-5000.app.github.dev/api";
 
-// ==============================
-// Utility: Page Navigation
-// ==============================
 const pages = document.querySelectorAll(".page");
 function showPage(pageId) {
   pages.forEach(p => p.classList.remove("active"));
   document.getElementById(pageId).classList.add("active");
 }
 
-// ==============================
-// Auth: Register & Login
-// ==============================
+// Auth elements
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -24,9 +16,7 @@ const toRegister = document.getElementById("toRegister");
 let token = localStorage.getItem("token");
 let currentUser = null;
 
-// ------------------------------
 // Register
-// ------------------------------
 registerBtn?.addEventListener("click", async () => {
   const name = document.getElementById("registerName").value.trim();
   const email = document.getElementById("registerEmail").value.trim();
@@ -52,9 +42,7 @@ registerBtn?.addEventListener("click", async () => {
   }
 });
 
-// ------------------------------
 // Login
-// ------------------------------
 loginBtn?.addEventListener("click", async () => {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value.trim();
@@ -88,9 +76,7 @@ loginBtn?.addEventListener("click", async () => {
   }
 });
 
-// ------------------------------
 // Logout
-// ------------------------------
 logoutBtn?.addEventListener("click", () => {
   token = null;
   currentUser = null;
@@ -98,15 +84,10 @@ logoutBtn?.addEventListener("click", () => {
   showPage("loginPage");
 });
 
-// ------------------------------
-// Page Links
-// ------------------------------
 toLogin?.addEventListener("click", () => showPage("loginPage"));
 toRegister?.addEventListener("click", () => showPage("registerPage"));
 
-// ==============================
 // Workouts
-// ==============================
 const addWorkoutBtn = document.getElementById("addWorkoutBtn");
 const workoutList = document.getElementById("workoutList");
 const workoutSelect = document.getElementById("workoutSelect");
@@ -155,9 +136,7 @@ addWorkoutBtn?.addEventListener("click", async () => {
   } catch (err) { console.error(err); }
 });
 
-// ==============================
 // Exercises
-// ==============================
 const addExerciseBtn = document.getElementById("addExerciseBtn");
 const exerciseList = document.getElementById("exerciseList");
 
@@ -201,69 +180,10 @@ addExerciseBtn?.addEventListener("click", async () => {
       body: JSON.stringify({ exercise })
     });
     if (res.ok) {
-      document.getElementById("exerciseName").value = "";
-      document.getElementById("bodyPart").value = "";
-      document.getElementById("equipment").value = "";
-      document.getElementById("sets").value = "";
-      document.getElementById("reps").value = "";
-      document.getElementById("duration").value = "";
+      ["exerciseName","bodyPart","equipment","sets","reps","duration"].forEach(id => document.getElementById(id).value = "");
       await loadExercises(workoutId);
     }
   } catch (err) { console.error(err); }
 });
 
 workoutSelect?.addEventListener("change", e => loadExercises(e.target.value));
-
-// ==============================
-// YouTube Search
-// ==============================
-const searchBtn = document.getElementById("searchBtn");
-const videoContainer = document.getElementById("videoContainer");
-
-searchBtn?.addEventListener("click", async () => {
-  const query = document.getElementById("searchQuery").value.trim();
-  if (!query || !token) return;
-
-  try {
-    const res = await fetch(`${API_BASE}/youtube/search?q=${query}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-
-    videoContainer.innerHTML = "";
-    if (data.contents) {
-      data.contents.forEach(item => {
-        if (item.video) {
-          const iframe = document.createElement("iframe");
-          iframe.src = `https://www.youtube.com/embed/${item.video.videoId}`;
-          iframe.width = "300";
-          iframe.height = "200";
-          iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-          iframe.allowFullscreen = true;
-          videoContainer.appendChild(iframe);
-        }
-      });
-    }
-  } catch (err) { console.error(err); }
-});
-
-// ==============================
-// Auto-login if token exists
-// ==============================
-window.addEventListener("DOMContentLoaded", async () => {
-  if (!token) return;
-
-  try {
-    const res = await fetch(`${API_BASE}/auth/me`, { // fixed endpoint
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      currentUser = await res.json();
-      document.getElementById("welcomeMsg").innerText = `Welcome, ${currentUser.name || "User"}`;
-      await loadWorkouts();
-      showPage("homePage");
-    } else {
-      localStorage.removeItem("token"); // invalid token
-    }
-  } catch (err) { console.error(err); }
-});
