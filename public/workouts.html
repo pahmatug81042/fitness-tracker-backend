@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="workouts.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav>
-        <a href="index.html" class="nav-logo">Fitness Tracker</a>
-        <div id="nav-links">
+    <!-- Navbar for logged-in users -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="nav-logo">Fitness Tracker</a>
+        <div class="nav-links">
             <a href="dashboard.html">Dashboard</a>
             <a href="workouts.html">My Workouts</a>
             <a href="#" id="logout-btn">Logout</a>
@@ -26,7 +26,7 @@
     </section>
 
     <!-- Edit Modal -->
-     <div id="edit-modal" class="modal hidden">
+    <div id="edit-modal" class="modal hidden">
         <div class="modal-content">
             <span id="close-edit" class="close">&times;</span>
             <h3>Edit Workout</h3>
@@ -43,8 +43,8 @@
                 <button type="submit">Update Workout</button>
             </form>
         </div>
-     </div>
+    </div>
 
-     <script src="workouts.js"></script>
+    <script src="workouts.js"></script>
 </body>
 </html>

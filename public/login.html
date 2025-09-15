@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <!-- Navbar -->
-     <nav>
+    <!-- Navbar for non-logged-in users -->
+    <nav class="navbar">
         <a href="index.html" class="nav-logo">Fitness Tracker</a>
-        <div id="nav-links">
-            <a href="register.html">Register</a>
+        <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="register.html">Register</a>
         </div>
-     </nav>
+    </nav>
 
-     <!-- Login Form -->
-     <section class="form-section">
+    <!-- Login Form -->
+    <section class="form-section">
         <h2>Login to Your Account</h2>
         <form id="login-form">
             <label for="email">Email</label>
@@ -29,8 +29,8 @@
             <button type="submit">Login</button>
         </form>
         <p>Don't have an account? <a href="register.html">Register here</a></p>
-     </section>
+    </section>
 
-     <script src="login.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>

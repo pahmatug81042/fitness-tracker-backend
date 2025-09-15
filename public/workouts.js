@@ -1,3 +1,4 @@
+// Get references to DOM elements
 const token = localStorage.getItem('token');
 const workoutsList = document.getElementById('workouts-list');
 const editModal = document.getElementById('edit-modal');
@@ -6,22 +7,30 @@ const editForm = document.getElementById('edit-form');
 
 let selectedWorkoutId = null;
 
+// ------------------------
 // Redirect if not logged-in
+// ------------------------
 if (!token) {
     alert("Please login to access your workouts");
     window.location.href = 'login.html';
 }
 
-// Fetch workouts
+// ------------------------
+// Fetch all saved workouts
+// ------------------------
 async function fetchWorkouts() {
     try {
-        const res = await fetch('/api/workouts', {
+        const res = await fetch('https://expert-zebra-97xxg55r7v96297q-5000.app.github.dev/api/workouts', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
+
+        if (!res.ok) throw new Error('Failed to fetch workouts');
+
         const workouts = await res.json();
 
+        // Render workout cards
         workoutsList.innerHTML = workouts
             .map(
                 (w) => `
@@ -42,31 +51,38 @@ async function fetchWorkouts() {
         console.error(error);
         alert("Failed to fetch workouts.");
     }
-};
+}
 
+// ------------------------
 // Open edit modal
+// ------------------------
 function openEditModal(id, sets, reps, notes) {
     selectedWorkoutId = id;
     document.getElementById('edit-sets').value = sets;
     document.getElementById('edit-reps').value = reps;
     document.getElementById('edit-notes').value = notes;
     editModal.classList.remove('hidden');
-};
+}
 
+// ------------------------
 // Close modal
+// ------------------------
 closeEdit.addEventListener('click', () => {
     editModal.classList.add('hidden');
 });
 
-// Handle edit submission
+// ------------------------
+// Handle workout edit form submission
+// ------------------------
 editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const sets = document.getElementById('edit-sets').value;
     const reps = document.getElementById('edit-reps').value;
     const notes = document.getElementById('edit-notes').value;
 
     try {
-        const res = await fetch(`/api/workouts/${selectedWorkoutId}`, {
+        const res = await fetch(`https://expert-zebra-97xxg55r7v96297q-5000.app.github.dev/api/workouts/${selectedWorkoutId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,7 +93,7 @@ editForm.addEventListener('submit', async (e) => {
 
         if (!res.ok) {
             const data = await res.json();
-            alert(data.message || 'Failed to updated workout.');
+            alert(data.message || 'Failed to update workout.');
             return;
         }
 
@@ -90,12 +106,14 @@ editForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Delete workout
+// ------------------------
+// Delete a workout
+// ------------------------
 async function deleteWorkout(id) {
     if (!confirm('Are you sure you want to delete this workout?')) return;
 
     try {
-        const res = await fetch(`/api/workouts/${id}`, {
+        const res = await fetch(`https://expert-zebra-97xxg55r7v96297q-5000.app.github.dev/api/workouts/${id}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -114,13 +132,17 @@ async function deleteWorkout(id) {
         console.error(error);
         alert('Something went wrong.');
     }
-};
+}
 
-// Logout
+// ------------------------
+// Logout button
+// ------------------------
 document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem("token");
     window.location.href = 'index.html';
 });
 
+// ------------------------
 // Initial fetch
+// ------------------------
 fetchWorkouts();

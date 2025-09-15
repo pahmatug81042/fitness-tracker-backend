@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="register.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav>
+    <!-- Navbar for non-logged-in users -->
+    <nav class="navbar">
         <a href="index.html" class="nav-logo">Fitness Tracker</a>
-        <div id="nav-links">
-            <a href="login.html">Login</a>
+        <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
         </div>
     </nav>
 
     <!-- Register Form -->
-     <section class="form-section">
+    <section class="form-section">
         <h2>Create an Account</h2>
         <form id="register-form">
             <label for="username">Username</label>
@@ -32,8 +32,8 @@
             <button type="submit">Register</button>
         </form>
         <p>Already have an account? <a href="login.html">Login here</a></p>
-     </section>
+    </section>
 
-     <script src="register.js"></script>
+    <script src="register.js"></script>
 </body>
 </html>
