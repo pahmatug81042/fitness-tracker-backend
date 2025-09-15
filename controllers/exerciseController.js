@@ -22,17 +22,15 @@ const youtubeOptions = {
 
 // -------------------- Fetch Exercises from ExerciseDB --------------------
 const fetchExercises = asyncHandler(async (req, res) => {
-    const { bodyPart } = req.query; // optional filter
-
-    const url = 
-        bodyPart && bodyPart !== "all"
-            ? `https://exercisedb.p.rapidapi.com/exercises/bodyPart/${bodyPart}`
-            : `https://exercisedb.p.rapidapi.com/exercises`;
-    
-    const response = await fetch (url, exerciseOptions);
+    // Fetch all exercises
+    const url = "https://exercisedb.p.rapidapi.com/exercises";
+    const response = await fetch(url, exerciseOptions);
     const data = await response.json();
 
-    res.json(data);
+    // Extract unique bodyParts for frontend filter
+    const bodyParts = Array.from(new Set(data.map((ex) => ex.bodyPart)));
+
+    res.json({ exercises: data, bodyParts });
 });
 
 // -------------------- Add Exercise to User's List --------------------
