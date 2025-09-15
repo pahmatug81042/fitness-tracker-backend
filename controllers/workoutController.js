@@ -1,40 +1,34 @@
-const Workout = require("../models/Workout");
 const asyncHandler = require("express-async-handler");
+const Workout = require("../models/Workout");
+const Exercise = require("../models/Exercise");
+
+// @desc    Get all workouts for logged-in users
+// @route   GET /api/workouts
+// @access  Private
+const getWorkouts = asyncHandler(async (req, res) => {
+    const workouts = await Workout.find({ user: req.user.id }).populate("exercises");
+    res.json(workouts);
+});
 
 // @desc    Create a new workout
 // @route   POST /api/workouts
 // @access  Private
-const createWorkout = asyncHandler(async (req, res) => {
-    const { exerciseId, exerciseName, sets, reps, notes } = req.body;
-    
-    if (!exerciseId || !exerciseName) {
+const createWorkout = asyncHandler (async (req, res) => {
+    const { name, exercises } = req.body;
+
+    if (!name) {
         res.status(400);
-        throw new Error("Exercise ID and name are required");
+        throw new Error("Workout name is required");
     }
 
     const workout = await Workout.create({
         user: req.user.id,
-        exerciseId,
-        exerciseName,
-        sets,
-        reps,
-        notes,
+        name,
+        exercises: exercises || [],
     });
 
     res.status(201).json(workout);
 });
-
-module.exports.createWorkout = createWorkout;
-
-// @desc    Get all workouts for logged-in user
-// @route   GET /api/workouts
-// @access  Private
-const getWorkouts = asyncHandler(async (req, res) => {
-    const workouts = (await Workout.find({ user: req.user.id })).toSorted({ createdAt: -1 });
-    res.json(workouts);
-});
-
-module.exports.getWorkouts = getWorkouts;
 
 // @desc    Update a workout
 // @route   PUT /api/workouts/:id
@@ -47,17 +41,17 @@ const updateWorkout = asyncHandler(async (req, res) => {
         throw new Error("Workout not found");
     }
 
-    // Ensure user owns the workout
     if (workout.user.toString() !== req.user.id) {
         res.status(401);
         throw new Error("Not authorized");
     }
 
-    const updateWorkout = await Workout.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updateWorkout);
+    const updatedWorkout = await Workout.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
 });
-
-module.exports.updateWorkout = updateWorkout;
 
 // @desc    Delete a workout
 // @route   DELETE /api/workouts/:id
@@ -70,8 +64,7 @@ const deleteWorkout = asyncHandler(async (req, res) => {
         throw new Error("Workout not found");
     }
 
-    // Ensure user owns the workout
-    if (workout.user.toString() !== req.params.id) {
+    if (workout.user.toString() !== req.user.id) {
         res.status(401);
         throw new Error("Not authorized");
     }
@@ -80,4 +73,9 @@ const deleteWorkout = asyncHandler(async (req, res) => {
     res.json({ message: "Workout removed" });
 });
 
-module.exports.deleteWorkout = deleteWorkout;
+module.exports = {
+    getWorkouts,
+    createWorkout,
+    updateWorkout,
+    deleteWorkout,
+};
