@@ -25,3 +25,13 @@ const createWorkout = asyncHandler(async (req, res) => {
 });
 
 module.exports.createWorkout = createWorkout;
+
+// @desc    Get all workouts for logged-in user
+// @route   GET /api/workouts
+// @access  Private
+const getWorkouts = asyncHandler(async (req, res) => {
+    const workouts = (await Workout.find({ user: req.user.id })).toSorted({ createdAt: -1 });
+    res.json(workouts);
+});
+
+module.exports.getWorkouts = getWorkouts;
