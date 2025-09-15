@@ -35,3 +35,26 @@ const getWorkouts = asyncHandler(async (req, res) => {
 });
 
 module.exports.getWorkouts = getWorkouts;
+
+// @desc    Update a workout
+// @route   PUT /api/workouts/:id
+// @access  Private
+const updateWorkout = asyncHandler(async (req, res) => {
+    const workout = await Workout.findById(req.params.id);
+
+    if (!workout) {
+        res.status(404);
+        throw new Error("Workout not found");
+    }
+
+    // Ensure user owns the workout
+    if (workout.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error("Not authorized");
+    }
+
+    const updateWorkout = await Workout.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updateWorkout);
+});
+
+module.exports.updateWorkout = updateWorkout;
