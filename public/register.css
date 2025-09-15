@@ -1,0 +1,98 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: #FFFAFB;
+    line-height: 1.6;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #FF2625;
+    color: white;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+    font-weight: bold;
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+}
+
+/* Form Section */
+.form-section {
+    max-width: 400px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #FF2625;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+form input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #FF2625;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #d11a1a;
+}
+
+p {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+p a {
+    color: #FF2625;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Reponsive Design */
+@media (max-width: 480px) {
+    .form-section {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+}
