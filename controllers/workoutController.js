@@ -58,3 +58,26 @@ const updateWorkout = asyncHandler(async (req, res) => {
 });
 
 module.exports.updateWorkout = updateWorkout;
+
+// @desc    Delete a workout
+// @route   DELETE /api/workouts/:id
+// @access  Private
+const deleteWorkout = asyncHandler(async (req, res) => {
+    const workout = await Workout.findById(req.params.id);
+
+    if (!workout) {
+        res.status(404);
+        throw new Error("Workout not found");
+    }
+
+    // Ensure user owns the workout
+    if (workout.user.toString() !== req.params.id) {
+        res.status(401);
+        throw new Error("Not authorized");
+    }
+
+    await workout.deleteOne();
+    res.json({ message: "Workout removed" });
+});
+
+module.exports.deleteWorkout = deleteWorkout;
