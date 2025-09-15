@@ -1,0 +1,134 @@
+body {
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: #FFFAFB;
+    margin: 0;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #FF2625;
+    color: white;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+    font-weight: bold;
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+}
+
+/* Workouts Section */
+.workouts {
+    padding: 2rem;
+    text-align: center;
+}
+
+.workouts h2 {
+    color: #FF2625;
+    margin-bottom: 2rem;
+}
+
+/* Workouts Grid */
+.workout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.workout-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.workout-card h3 {
+    margin-bottom: 0.5rem;
+    color: #3A1212;
+}
+
+.workout-card p {
+    margin: 0.3rem 0;
+    color: #555;
+}
+
+.card-actions {
+    margin-top: 1rem;
+}
+
+.card-actions button {
+    margin-right: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.card-actions .edit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.card-actions .edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.card-actions .delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.card-actions .delete-btn:hover {
+    background-color: #a71d2a;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #FF2625;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .workout-grid {
+        grid-template-columns: 1fr;
+    }
+}
