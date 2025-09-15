@@ -1,5 +1,4 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 
@@ -59,4 +58,20 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { registerUser, loginUser };
+// @desc    Get current user profile
+// @route   GET /api/auth/me
+// @access  Private
+const getMe = asyncHandler(async (req, res) => {
+    if (!req.user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    res.json({
+        _id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+    });
+});
+
+module.exports = { registerUser, loginUser, getMe };
