@@ -17,6 +17,7 @@ connectDB();
 // Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/workouts", require("./routes/workouts"));
+app.use("/api/exercises", require("./routes/exercise"))
 
 // Serve static files for testing (public/)
 app.use(express.static(path.join(__dirname, "public")));
