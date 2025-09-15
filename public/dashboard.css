@@ -1,90 +1,147 @@
-body {
-    font-family: 'Josefin Sans', sans-serif;
-    background-color: #FFFAFB;
+/* ------------------------ */
+/* Reset & Base Styles */
+/* ------------------------ */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
 
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ------------------------ */
 /* Navbar */
-nav {
+/* ------------------------ */
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #2c3e50;
     padding: 1rem 2rem;
-    background-color: #FF2625;
-    color: white;
+    color: #fff;
 }
 
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 1rem;
+.navbar .nav-logo {
+    font-size: 1.8rem;
     font-weight: bold;
+    color: #fff;
+    text-decoration: none;
 }
 
-.nav-logo {
-    font-size: 1.5rem;
+.navbar .nav-links a {
+    margin-left: 1.5rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
-/* Dashboard */
+.navbar .nav-links a:hover {
+    color: #1abc9c;
+}
+
+/* ------------------------ */
+/* Dashboard Section */
+/* ------------------------ */
 .dashboard {
-    padding: 2rem;
-    text-align: center;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
 .dashboard h2 {
-    color: #FF2625;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+    color: #2c3e50;
 }
 
+/* ------------------------ */
 /* Exercise Grid */
+/* ------------------------ */
 .exercise-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
 }
 
+/* ------------------------ */
+/* Exercise Card */
+/* ------------------------ */
 .exercise-card {
-    background-color: white;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.exercise-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+/* Thumbnail */
+.exercise-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+/* Card Content */
+.exercise-card-content {
     padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    flex: 1;
 }
 
-.exercise-card h3 {
+.exercise-card-content h3 {
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    color: #3A1212;
+    color: #2c3e50;
 }
 
-.exercise-card p {
+.exercise-card-content p {
+    font-size: 0.95rem;
     margin-bottom: 1rem;
     color: #555;
 }
 
-.exercise-card button {
-    padding: 0.7rem 1.2rem;
+.exercise-card-content button {
+    padding: 0.5rem 1rem;
+    background-color: #1abc9c;
+    color: #fff;
     border: none;
-    background-color: #FF2625;
-    color: white;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
-.exercise-card button:hover {
-    background-color: #d11a1a;
+.exercise-card-content button:hover {
+    background-color: #16a085;
 }
 
+/* ------------------------ */
 /* Modal */
+/* ------------------------ */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: rgba(0,0,0,0.5);
     display: flex;
-    align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal.hidden {
@@ -92,26 +149,82 @@ nav a {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: #fff;
     padding: 2rem;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 100%;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
     position: relative;
 }
 
 .close {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 1rem;
+    right: 1rem;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #FF2625;
+    color: #333;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .exercise-grid {
-        grid-template-columns: 1fr;
+.modal h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.modal form label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.modal form input,
+.modal form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.modal form textarea {
+    resize: vertical;
+}
+
+.modal form button {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.7rem;
+    background-color: #1abc9c;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal form button:hover {
+    background-color: #16a085;
+}
+
+/* ------------------------ */
+/* Responsive adjustments */
+/* ------------------------ */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar .nav-links {
+        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar .nav-links a {
+        margin: 0.5rem 0;
     }
 }

@@ -7,7 +7,7 @@ require("dotenv").config();
 const exerciseOptions = {
     method: "GET",
     headers: {
-        "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+        "X-RapidAPI-Host": process.env.EXERCISEDB_HOST,
         "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
     },
 };
@@ -15,22 +15,52 @@ const exerciseOptions = {
 const youtubeOptions = {
     method: "GET",
     headers: {
-        "X-RapidAPI-Host": "youtube-search-and-download.p.rapidapi.com",
+        "X-RapidAPI-Host": process.env.YOUTUBE_HOST,
         "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
     },
 };
 
-// -------------------- Fetch Exercises from ExerciseDB --------------------
+// -------------------- Fetch all exercises with YouTube thumbnails --------------------
 const fetchExercises = asyncHandler(async (req, res) => {
-    // Fetch all exercises
     const url = "https://exercisedb.p.rapidapi.com/exercises";
     const response = await fetch(url, exerciseOptions);
     const data = await response.json();
 
-    // Extract unique bodyParts for frontend filter
+    // Extract unique bodyParts
     const bodyParts = Array.from(new Set(data.map((ex) => ex.bodyPart)));
 
-    res.json({ exercises: data, bodyParts });
+    // Fetch YouTube thumbnails for each exercise
+    const exercisesWithThumbs = await Promise.all(
+        data.map(async (ex) => {
+            try {
+                const youtubeUrl = `https://youtube-search-and-download.p.rapidapi.com/search?query=${ex.name} exercise`;
+                const youtubeRes = await fetch(youtubeUrl, youtubeOptions);
+                const youtubeData = await youtubeRes.json();
+
+                const thumbnail = youtubeData.contents?.[0]?.video?.thumbnails?.[0]?.url || "";
+
+                return {
+                    id: ex.id,
+                    name: ex.name,
+                    bodyPart: ex.bodyPart,
+                    target: ex.target,
+                    equipment: ex.equipment,
+                    youtubeThumbnail: thumbnail,
+                };
+            } catch (err) {
+                return {
+                    id: ex.id,
+                    name: ex.name,
+                    bodyPart: ex.bodyPart,
+                    target: ex.target,
+                    equipment: ex.equipment,
+                    youtubeThumbnail: "",
+                };
+            }
+        })
+    );
+
+    res.json({ exercises: exercisesWithThumbs, bodyParts });
 });
 
 // -------------------- Add Exercise to User's List --------------------
@@ -52,7 +82,7 @@ const addExercise = asyncHandler(async (req, res) => {
         additionalNotes,
     });
 
-    res.json(201).json(exercise);
+    res.status(201).json(exercise);
 });
 
 // -------------------- Get All User Exercises --------------------
@@ -73,7 +103,6 @@ const getExerciseById = asyncHandler(async (req, res) => {
         throw new Error("Exercise not found");
     }
 
-    // Fetch YouTube videos related to the exercise
     const youtubeUrl = `https://youtube-search-and-download.p.rapidapi.com/search?query=${exercise.name} exercise`;
     const youtubeRes = await fetch(youtubeUrl, youtubeOptions);
     const youtubeData = await youtubeRes.json();
